@@ -1,20 +1,20 @@
 // Controller
 'use strict';
-import station from '../models/stationModel';
+import Station from '../models/stationModel';
 
 const station_list_get = async (req, res) => {
-  res.json(await station.find());
+  res.json(await Station.find().populate('Connections'));
 };
 
 const station_get = async (req, res) => {
   const stationId = req.params.id;
-  res.json(await station.findById(stationId));
+  res.json(await Station.findById(stationId));
 };
 
 const station_post = async (req, res) => {
   const newStation = req.body;
   try {
-    await station.create(newStation);
+    await Station.create(newStation);
     res.json(newStation);
   } catch (error) {
     console.log(error.message);
@@ -26,7 +26,7 @@ const station_put = async (req, res) => {
   const { name, weight, color } = req.body;
   const { id } = req.params;
   try {
-    const mod = await station.updateOne({ _id: id }, { name, weight, color });
+    const mod = await Station.updateOne({ _id: id }, { name, weight, color });
     res.status(200).send(`Updated sucessfully ${mod.modifiedCount} station`);
   } catch (error) {
     console.log(error.message);
@@ -37,7 +37,7 @@ const station_put = async (req, res) => {
 const station_delete = async (req, res) => {
   const { id } = req.params;
   try {
-    const del = await station.deleteOne({ _id: id });
+    const del = await Station.deleteOne({ _id: id });
     res.send(`Deleted ${del.deletedCount} station`);
 
   } catch (error) {
