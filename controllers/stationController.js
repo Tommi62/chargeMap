@@ -3,7 +3,14 @@
 import Station from '../models/stationModel';
 
 const station_list_get = async (req, res) => {
-  res.json(await Station.find().populate('Connections'));
+  const query = req.query;
+  let stationLimit = 10;
+
+  if (query.hasOwnProperty('limit')){
+    query['limit'] = parseInt(query.limit);
+    stationLimit = query.limit;
+  }
+  res.json(await Station.find().populate('Connections').limit(stationLimit));
 };
 
 const station_get = async (req, res) => {
@@ -12,22 +19,11 @@ const station_get = async (req, res) => {
 };
 
 const station_post = async (req, res) => {
+  console.log('Req', req.body);
   const newStation = req.body;
   try {
     await Station.create(newStation);
     res.json(newStation);
-  } catch (error) {
-    console.log(error.message);
-    res.json();
-  }
-};
-
-const station_put = async (req, res) => {
-  const { name, weight, color } = req.body;
-  const { id } = req.params;
-  try {
-    const mod = await Station.updateOne({ _id: id }, { name, weight, color });
-    res.status(200).send(`Updated sucessfully ${mod.modifiedCount} station`);
   } catch (error) {
     console.log(error.message);
     res.json();
@@ -50,7 +46,6 @@ export {
   station_list_get,
   station_get,
   station_post,
-  station_put,
   station_delete,
 };
 
